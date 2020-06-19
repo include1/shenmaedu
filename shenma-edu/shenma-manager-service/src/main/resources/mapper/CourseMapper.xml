@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bbu.shenma.mapper.CourseMapper">
+    <sql id="base_column">
+            c.id,
+            c.name,
+            c.cover_img As coverImg,
+            Convert(c.price,decimal(18,2)) as price,
+            c.description,
+            c.view_num AS viewNum,
+            c.buy_num AS buyNum,
+            c.learn_time AS learnTime,
+            c.free,
+            t.name AS teacherName,
+            c1.title AS oneCategory,
+            c2.title AS twoCategory
+     </sql>
+    <!--使用id查询课程信息getCourseInfoDtoById(String id)-->
+    <select id="getCourseInfoDtoById" resultType="com.bbu.shenma.dto.CourseInfoDto">
+        SELECT
+            <include refid="base_column"></include>
+        FROM
+            tb_course c
+            LEFT JOIN tb_teacher t ON c.teacher_id = t.id
+            LEFT JOIN tb_category c1 ON c.category_parent_id = c1.id
+            LEFT JOIN tb_category c2 ON c.category_id = c2.id
+        WHERE c.del = 0 AND c.id = #{id}
+    </select>
+
+    <!--进行分页课程详细信息-->
+    <!--getCourseInfoDtoByPage(int page,int size,Map<String,Object> map);-->
+    <select id="getCourseInfoDtoByPage" resultType="com.bbu.shenma.dto.CourseInfoDto">
+        SELECT
+        <include refid="base_column"></include>
+        FROM
+        tb_course c
+        LEFT JOIN tb_teacher t ON c.teacher_id = t.id
+        LEFT JOIN tb_category c1 ON c.category_parent_id = c1.id
+        LEFT JOIN tb_category c2 ON c.category_id = c2.id
+        WHERE c.del = 0
+           <if test="param3.teacherId != null">
+                and c.teacher_id = #{param3.teacherId}
+           </if>
+            <if test="param3.categoryId != null">
+                and c.category_id = #{param3.categoryId}
+            </if>
+            <if test="param3.categoryParentId != null">
+                and c.category_parent_id = #{param3.categoryParentId}
+            </if>
+        LIMIT #{page},#{size}
+    </select>
+    <!--获取前台课程详情-->
+    <select id="selectFrontCourseDetailInfo" resultType="com.bbu.shenma.dto.FrontCourseDetailInfoDto">
+         SELECT
+            c.id As courseId,
+            c.name AS courseName,
+            c.cover_img as coverImg,
+            c.price,
+            c.free,
+            c.buy_num AS buyNum,
+            c.learn_time AS learnTime,
+            c.view_num viewNum,
+            c.description,
+            t.id AS teacherId,
+            t.avatar,
+            t.intro,
+            t.name AS teacherName,
+            c1.title AS oneCategory,
+            c2.title As twoCategory
+
+        FROM
+            tb_course c
+            LEFT JOIN tb_teacher t ON t.id = c.teacher_id
+            LEFT JOIN tb_category c1 ON c1.id = c.category_parent_id
+            LEFT JOIN tb_category c2 ON c2.id = c.category_id
+        WHERE
+            c.id = #{id}
+    </select>
+</mapper>

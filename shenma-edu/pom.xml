@@ -38,7 +38,7 @@
         <jsoup.version>1.11.2</jsoup.version>
         <httpclient.version>4.5.5</httpclient.version>
         <commons-lang3.version>3.7</commons-lang3.version>
-        <beanUtils.version>1.9.3</beanUtils.version>
+        <beanUtils.version>1.9.4</beanUtils.version>
         <jedis.version>2.9.0</jedis.version>
     </properties>
 
